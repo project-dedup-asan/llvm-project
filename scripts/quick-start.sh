@@ -64,9 +64,9 @@ prepare_and_switch_to_build_directory() {
 
 # Requires you are in the build directory
 run_cmake() {
-    cmake -dllvm_targets_to_build="X86" \
-        -dllvm_enable_projects="clang;clang++;compiler-rt" \
-        -dcmake_build_type=Release \
+    cmake -DLLVM_TARGETS_TO_BUILD="X86" \
+        -DLLVM_ENABLE_PROJECTS="clang;clang++;compiler-rt" \
+        -DCMAKE_BUILD_TYPE=Release \
         ../llvm
 }
 
