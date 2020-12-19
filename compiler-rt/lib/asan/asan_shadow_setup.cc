@@ -20,6 +20,8 @@
 #include "asan_internal.h"
 #include "asan_mapping.h"
 
+#include <sys/mman.h>
+
 namespace __asan {
 
 // ---------------------- mmap -------------------- {{{1
@@ -37,8 +39,11 @@ void ReserveShadowMemoryRange(uptr beg, uptr end, const char *name) {
         size);
     Abort();
   }
+
   if (common_flags()->no_huge_pages_for_shadow) NoHugePagesInRegion(beg, size);
   if (common_flags()->use_madv_dontdump) DontDumpShadowMemory(beg, size);
+
+  madvise((void *)beg, size, MADV_MERGEABLE);
 }
 
 static void ProtectGap(uptr addr, uptr size) {

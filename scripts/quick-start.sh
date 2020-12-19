@@ -66,7 +66,7 @@ prepare_and_switch_to_build_directory() {
 run_cmake() {
     cmake \
         -DLLVM_TARGETS_TO_BUILD="X86" \
-        -DLLVM_ENABLE_PROJECTS="clang;clang++;compiler-rt" \
+        -DLLVM_ENABLE_PROJECTS="clang;compiler-rt;clang-tools-extra;lld;libcxx;libcxxabi;libunwind" \
         -DCMAKE_BUILD_TYPE=Release \
         ../llvm
 }
