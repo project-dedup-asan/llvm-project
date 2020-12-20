@@ -44,7 +44,7 @@ void ReserveShadowMemoryRange(uptr beg, uptr end, const char *name) {
   if (common_flags()->use_madv_dontdump) DontDumpShadowMemory(beg, size);
 
   if (common_flags()->enable_ksm == 1 /* ksm all shadow */) {
-    VReport(1, "madvise(0x%llx, 0x%llx, madv_mergeable)", beg, size);
+    VReport(1, "madvise(0x%llx, 0x%llx, madv_mergeable)\n", beg, size);
     madvise((void *)beg, size, MADV_MERGEABLE);
   }
 }
