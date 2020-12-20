@@ -531,7 +531,7 @@ struct Allocator {
 
     void *res = reinterpret_cast<void *>(user_beg);
 
-    VReport(1, "[%s] user_beg: 0x%llx", __func__, user_beg);
+    VReport(1, "Allocate chunk at 0x%llx\n", user_beg - kChunkHeaderSize);
 
     if (can_fill && fl.max_malloc_fill_size) {
       uptr fill_size = Min(size, (uptr)fl.max_malloc_fill_size);
@@ -616,6 +616,8 @@ struct Allocator {
 
     uptr chunk_beg = p - kChunkHeaderSize;
     AsanChunk *m = reinterpret_cast<AsanChunk *>(chunk_beg);
+
+    VReport(1, "Deallocate chunk at 0x%llx\n", p);
 
     // On Windows, uninstrumented DLLs may allocate memory before ASan hooks
     // malloc. Don't report an invalid free in this case.
