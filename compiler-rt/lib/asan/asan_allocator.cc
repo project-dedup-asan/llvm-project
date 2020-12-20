@@ -531,7 +531,7 @@ struct Allocator {
 
     void *res = reinterpret_cast<void *>(user_beg);
 
-    VReport(1, "[%s] user_beg: 0x%lx", user_beg);
+    VReport(1, "[%s] user_beg: 0x%lx", __func__, user_beg);
 
     if (can_fill && fl.max_malloc_fill_size) {
       uptr fill_size = Min(size, (uptr)fl.max_malloc_fill_size);
