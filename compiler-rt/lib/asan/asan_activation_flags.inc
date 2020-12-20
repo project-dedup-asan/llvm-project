@@ -34,3 +34,4 @@ COMMON_ACTIVATION_FLAG(const char *, coverage_dir)
 COMMON_ACTIVATION_FLAG(int, verbosity)
 COMMON_ACTIVATION_FLAG(bool, help)
 COMMON_ACTIVATION_FLAG(s32, allocator_release_to_os_interval_ms)
+COMMON_ACTIVATION_FLAG(int, enable_ksm) /* 1: all shadow, 2: incremental */
