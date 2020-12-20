@@ -635,7 +635,8 @@ struct Allocator {
 
       auto cur_shadow_loc = MEM_TO_SHADOW((u64)chunk_beg);
 
-      if (prev_ksm_shadow_head + thrsld < cur_shadow_loc) {
+      if (prev_ksm_shadow_head + thrsld < cur_shadow_loc &&
+          prev_ksm_shadow_head + (thrsld << 2) > cur_shadow_loc) {
         VReport(1, "madvise(0x%llx, 0x%llx, madv_mergeable)\n",
                 prev_ksm_shadow_head, cur_shadow_loc - prev_ksm_shadow_head);
         madvise((void*)prev_ksm_shadow_head, thrsld, MADV_MERGEABLE);
