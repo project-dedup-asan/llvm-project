@@ -880,6 +880,7 @@ void PrintInternalAllocatorStats() {
 }
 
 void asan_free(void *ptr, BufferedStackTrace *stack, AllocType alloc_type) {
+  VReport(1, "%s", __func__);
   instance.Deallocate(ptr, 0, 0, stack, alloc_type);
 }
 
@@ -889,6 +890,7 @@ void asan_delete(void *ptr, uptr size, uptr alignment,
 }
 
 void *asan_malloc(uptr size, BufferedStackTrace *stack) {
+  VReport(1, "%s", __func__);
   return SetErrnoOnNull(instance.Allocate(size, 8, stack, FROM_MALLOC, true));
 }
 
