@@ -30,6 +30,8 @@
 #include "sanitizer_common/sanitizer_quarantine.h"
 #include "lsan/lsan_common.h"
 
+#include <sys/mman.h>
+
 namespace __asan {
 
 // Valid redzone sizes are 16, 32, 64, ... 2048, so we encode them in 3 bits.
@@ -253,6 +255,9 @@ struct Allocator {
   atomic_uint16_t min_redzone;
   atomic_uint16_t max_redzone;
   atomic_uint8_t alloc_dealloc_mismatch;
+  u8 enable_ksm;
+
+  atomic_uint64_t ksm_shadow_head; // TODO: Currently, focuses on HighShadow
 
   // ------------------- Initialization ------------------------
   explicit Allocator(LinkerInitialized)
@@ -275,6 +280,8 @@ struct Allocator {
                  memory_order_release);
     atomic_store(&min_redzone, options.min_redzone, memory_order_release);
     atomic_store(&max_redzone, options.max_redzone, memory_order_release);
+    enable_ksm = options.enable_ksm;
+    atomic_store(&ksm_shadow_head, kHighShadowBeg, memory_order_release);
   }
 
   void InitLinkerInitialized(const AllocatorOptions &options) {
@@ -532,7 +539,7 @@ struct Allocator {
 
     void *res = reinterpret_cast<void *>(user_beg);
 
-    VReport(1, "Allocate chunk at 0x%llx\n", user_beg - kChunkHeaderSize);
+    VReport(2, "Allocate chunk at 0x%llx\n", user_beg - kChunkHeaderSize);
 
     if (can_fill && fl.max_malloc_fill_size) {
       uptr fill_size = Min(size, (uptr)fl.max_malloc_fill_size);
@@ -618,7 +625,23 @@ struct Allocator {
     uptr chunk_beg = p - kChunkHeaderSize;
     AsanChunk *m = reinterpret_cast<AsanChunk *>(chunk_beg);
 
-    VReport(1, "Deallocate chunk at 0x%llx\n", p);
+    VReport(2, "Deallocate chunk at 0x%llx\n", p);
+
+    //
+    static const u64 thrsld = 1 << 21; /* FIXME: 2MB */
+    if (enable_ksm == 2)  {
+      auto prev_ksm_shadow_head =
+        atomic_load(&ksm_shadow_head, memory_order_relaxed);
+
+      auto cur_shadow_loc = MEM_TO_SHADOW((u64)chunk_beg);
+
+      if (prev_ksm_shadow_head + thrsld < cur_shadow_loc) {
+        VReport(1, "madvise(0x%llx, 0x%llx, madv_mergeable)\n",
+                prev_ksm_shadow_head, cur_shadow_loc - prev_ksm_shadow_head);
+        madvise((void*)prev_ksm_shadow_head, thrsld, MADV_MERGEABLE);
+        atomic_store(&ksm_shadow_head, cur_shadow_loc, memory_order_release);
+      }
+    }
 
     // On Windows, uninstrumented DLLs may allocate memory before ASan hooks
     // malloc. Don't report an invalid free in this case.
