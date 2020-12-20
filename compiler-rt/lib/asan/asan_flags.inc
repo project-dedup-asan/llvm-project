@@ -16,6 +16,9 @@
 // ASAN_FLAG(Type, Name, DefaultValue, Description)
 // See COMMON_FLAG in sanitizer_flags.inc for more details.
 
+ASAN_FLAG(int, enable_ksm, 0,
+          "Enable KSM. (0 - No KSM, 1 - KSM entire shadow memory, "
+          "2 - Incrementally pass shadow memory into KSM)")
 ASAN_FLAG(int, quarantine_size, -1,
             "Deprecated, please use quarantine_size_mb.")
 ASAN_FLAG(int, quarantine_size_mb, -1,

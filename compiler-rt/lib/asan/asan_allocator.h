@@ -28,6 +28,12 @@ enum AllocType {
   FROM_NEW_BR = 3   // Memory block came from operator new [ ]
 };
 
+enum EnableKsm {
+  NO_KSM = 0,
+  KSM_ALL_SHADOW = 1,
+  KSM_INCREMENTAL = 2,
+};
+
 struct AsanChunk;
 
 struct AllocatorOptions {
@@ -38,6 +44,7 @@ struct AllocatorOptions {
   u8 may_return_null;
   u8 alloc_dealloc_mismatch;
   s32 release_to_os_interval_ms;
+  u8 enable_ksm;
 
   void SetFrom(const Flags *f, const CommonFlags *cf);
   void CopyTo(Flags *f, CommonFlags *cf);

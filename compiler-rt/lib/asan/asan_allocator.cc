@@ -224,6 +224,7 @@ void AllocatorOptions::SetFrom(const Flags *f, const CommonFlags *cf) {
   may_return_null = cf->allocator_may_return_null;
   alloc_dealloc_mismatch = f->alloc_dealloc_mismatch;
   release_to_os_interval_ms = cf->allocator_release_to_os_interval_ms;
+  enable_ksm = f->enable_ksm;
 }
 
 void AllocatorOptions::CopyTo(Flags *f, CommonFlags *cf) {
