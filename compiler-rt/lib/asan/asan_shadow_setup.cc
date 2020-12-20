@@ -43,7 +43,8 @@ void ReserveShadowMemoryRange(uptr beg, uptr end, const char *name) {
   if (common_flags()->no_huge_pages_for_shadow) NoHugePagesInRegion(beg, size);
   if (common_flags()->use_madv_dontdump) DontDumpShadowMemory(beg, size);
 
-  madvise((void *)beg, size, MADV_MERGEABLE);
+  if (common_flags()->enable_ksm == 1 /* ksm all shadow */)
+    madvise((void *)beg, size, MADV_MERGEABLE);
 }
 
 static void ProtectGap(uptr addr, uptr size) {

@@ -162,6 +162,9 @@ COMMON_FLAG(
 COMMON_FLAG(bool, use_madv_dontdump, true,
           "If set, instructs kernel to not store the (huge) shadow "
           "in core file.")
+COMMON_FLAG(int, enable_ksm, 0,
+            "Enable KSM. (0 - No KSM, 1 - KSM entire shadow memory, "
+            "2 - Incrementally pass shadow memory into KSM)")
 COMMON_FLAG(bool, symbolize_inline_frames, true,
             "Print inlined frames in stacktraces. Defaults to true.")
 COMMON_FLAG(bool, symbolize_vs_style, false,
