@@ -530,6 +530,9 @@ struct Allocator {
       thread_stats.malloced_by_size[SizeClassMap::ClassID(needed_size)]++;
 
     void *res = reinterpret_cast<void *>(user_beg);
+
+    VReport(1, "[%s] user_beg: 0x%lx", user_beg);
+
     if (can_fill && fl.max_malloc_fill_size) {
       uptr fill_size = Min(size, (uptr)fl.max_malloc_fill_size);
       REAL(memset)(res, fl.malloc_fill_byte, fill_size);
